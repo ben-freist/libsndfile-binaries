@@ -17,7 +17,7 @@ set -e
 
 # make sure all static libraries are position-independent, so we can link them
 # into the libsndfile.so later:
-export CFLAGS="-fPIC"
+export CFLAGS="-fPIC -O2"
 export LDFLAGS="-fPIC"
 
 # libogg
