@@ -19,17 +19,17 @@ if [ "$1" = "arm64" ]; then
     echo "compiling for Darwin arm64.."
     export MACOSX_DEPLOYMENT_TARGET=11.0
     BUILD_HOST="--host=aarch64-apple-darwin --target=arm64-apple-macos11"
-    EXTRA_CFLAGS="-arch arm64 -target arm64-apple-macos11"
+    EXTRA_CFLAGS="-arch arm64 -target arm64-apple-macos11 -O2"
 elif [ "$1" = "x86_64" ]; then
     echo "compiling for Darwin x86_64.."
     export MACOSX_DEPLOYMENT_TARGET=11.0
     BUILD_HOST="--host=x86_64-apple-darwin --target=x86_64-apple-macos11"
-    EXTRA_CFLAGS="-arch x86_64 -target x86_64-apple-macos11"
+    EXTRA_CFLAGS="-arch x86_64 -target x86_64-apple-macos11 -O2"
 else
     echo "compiling for Darwin $(uname -m).."
     export MACOSX_DEPLOYMENT_TARGET=10.9
     BUILD_HOST=""
-    EXTRA_CFLAGS=""
+    EXTRA_CFLAGS="-O2"
 fi
 
 # libogg
