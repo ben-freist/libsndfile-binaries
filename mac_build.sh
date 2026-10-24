@@ -19,18 +19,23 @@ if [ "$1" = "arm64" ]; then
     echo "compiling for Darwin arm64.."
     export MACOSX_DEPLOYMENT_TARGET=11.0
     BUILD_HOST="--host=aarch64-apple-darwin --target=arm64-apple-macos11"
-    EXTRA_CFLAGS="-arch arm64 -target arm64-apple-macos11 -O2"
+    EXTRA_CFLAGS="-arch arm64 -target arm64-apple-macos11"
 elif [ "$1" = "x86_64" ]; then
     echo "compiling for Darwin x86_64.."
     export MACOSX_DEPLOYMENT_TARGET=11.0
     BUILD_HOST="--host=x86_64-apple-darwin --target=x86_64-apple-macos11"
-    EXTRA_CFLAGS="-arch x86_64 -target x86_64-apple-macos11 -O2"
+    EXTRA_CFLAGS="-arch x86_64 -target x86_64-apple-macos11"
 else
     echo "compiling for Darwin $(uname -m).."
     export MACOSX_DEPLOYMENT_TARGET=10.9
     BUILD_HOST=""
-    EXTRA_CFLAGS="-O2"
+    EXTRA_CFLAGS=""
 fi
+
+# Setting CFLAGS drops autotools' default -O2, and CMake has no default
+# optimisation at all, so pass it to every build explicitly.
+OPT_CFLAGS="-O2"
+EXTRA_CFLAGS="$EXTRA_CFLAGS $OPT_CFLAGS"
 
 # libogg
 
@@ -114,9 +119,9 @@ curl -LO https://github.com/libsndfile/libsndfile/releases/download/$SNDFILE_VER
 tar jxvf libsndfile-$SNDFILE_VERSION.tar.xz
 cd $SNDFILENAME
 if [ "$1" = "arm64" ]; then
-cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_OSX_ARCHITECTURES=arm64 -DBUILD_SHARED_LIBS=ON -DENABLE_EXTERNAL_LIBS=ON -DENABLE_MPEG=ON -DBUILD_PROGRAMS=OFF -DBUILD_EXAMPLES=OFF -DCMAKE_PROJECT_INCLUDE=../darwin.cmake .
+cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_OSX_ARCHITECTURES=arm64 -DBUILD_SHARED_LIBS=ON -DENABLE_EXTERNAL_LIBS=ON -DENABLE_MPEG=ON -DBUILD_PROGRAMS=OFF -DBUILD_EXAMPLES=OFF -DCMAKE_C_FLAGS="$OPT_CFLAGS" -DCMAKE_PROJECT_INCLUDE=../darwin.cmake .
 else
-cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_OSX_ARCHITECTURES=x86_64 -DBUILD_SHARED_LIBS=ON -DENABLE_EXTERNAL_LIBS=ON -DENABLE_MPEG=ON -DBUILD_PROGRAMS=OFF -DBUILD_EXAMPLES=OFF -DCMAKE_PROJECT_INCLUDE=../darwin.cmake .
+cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_OSX_ARCHITECTURES=x86_64 -DBUILD_SHARED_LIBS=ON -DENABLE_EXTERNAL_LIBS=ON -DENABLE_MPEG=ON -DBUILD_PROGRAMS=OFF -DBUILD_EXAMPLES=OFF -DCMAKE_C_FLAGS="$OPT_CFLAGS" -DCMAKE_PROJECT_INCLUDE=../darwin.cmake .
 fi
 cmake --build . --parallel $JOBS
 cd ..
