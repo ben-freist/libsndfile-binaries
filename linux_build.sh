@@ -96,7 +96,7 @@ export MPG123_LIBS="-L$(pwd)/mpg123-$MPG123VERSION/src/libmpg123/.libs/ -lmpg123
 
 # add some global flags that libsndfile's compile script doesn't pick up
 # correctly from the above variables:
-export CFLAGS="$LAME_CFLAGS"
+export CFLAGS="$CFLAGS $LAME_CFLAGS"  # keep -fPIC -O2 for libsndfile itself
 export LDFLAGS="$MPG123_LIBS"
 
 # copy opus and lame headers into a subdirectory, as they are imported as opus/opus.h and lame/lame.h:
